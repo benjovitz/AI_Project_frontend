@@ -9,8 +9,8 @@ let quotes =[]
 async function initApp(){
  await getToken()
  quotes = getQuotes()
- document.getElementById("start").onclick=test
  document.getElementById("bgm").volume=0.5
+ document.getElementById("bgm").addEventListener("ended",null,setMood())
   //setMood()
 }
 
@@ -27,41 +27,6 @@ async function getToken(){
 
 
 }
-async function nextQuote(){
-  const quote = document.getElementById("quote")
-
-  let headers = new Headers()
-  headers.set("X-Microsoft-OutputFormat","audio-16khz-32kbitrate-mono-mp3")
-  headers.set("Content-Type","application/ssml+xml")
-  headers.set("Host","northeurope.tts.speech.microsoft.com")
-  headers.set("Authorization","Bearer "+localStorage.getItem("token"))
-
-  let body = `<speak version='1.0' xml:lang='en-US'><voice xml:lang='en-US' xml:gender='Male'
-  name='en-US-ChristopherNeural'>
-      pee pee poo poo
-</voice></speak>`
-
-/*
-  quote.onended=()=>{
-    let body = `<speak version='1.0' xml:lang='en-US'>
-    <voice xml:lang='en-US' xml:gender='Male'
-    name='en-US-ChristopherNeural'>
-        Microsoft Speech Service Text-to-Speech API
-</voice>
-</speak>`
-   let request = new XMLHttpRequest()
-   request.open("POST","https://northeurope.tts.speech.microsoft.com/cognitiveservices/v1")
-   request.setRequestHeader("X-Microsoft-OutputFormat","audio-16khz-32kbitrate-mono-mp3")
-   request.setRequestHeader("Content-Type","application/ssml+xml")
-   request.setRequestHeader("Host","northeurope.tts.speech.microsoft.com")
-   request.setRequestHeader("Authorization","Bearer "+localStorage.getItem("token"))
-
-   request.send(body)
-   console.log(request.responseType)
-
-  }
-  */
-}
 
 async function getQuotes(){
   try {
@@ -72,7 +37,7 @@ async function getQuotes(){
   }
 }
 
-function test() {
+function getSpokenQuote() {
   let body = quotes[Math.floor(Math.random()*quotes.length)].quote
   let request = new XMLHttpRequest();
   request.open("POST","https://northeurope.tts.speech.microsoft.com/cognitiveservices/v1");
@@ -109,7 +74,7 @@ function test() {
   const audio = document.getElementById("bgm")
 
   audio.onended=()=>{
-    let nextSong = Math.floor(Math.random()*4)
+    let nextSong = Math.floor(Math.random()*songs.length-1)
     audio.src=songs[nextSong]
     audio.pause()
     audio.load()
