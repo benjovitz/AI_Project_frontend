@@ -3,15 +3,17 @@ const URL = "http://localhost:8080/api/quotes/"
 
 window.onload=initApp
 
-let songs = ["./music/1.mp3","./music/2.mp3","./music/3.mp3","./music/4.mp3"]
+let songs = ["./music/0.mp3","./music/1.mp3","./music/2.mp3","./music/3.mp3"]
 let quotes =[]
+let lastQuote
+let lastSong
 
 async function initApp(){
  await getToken()
- quotes = getQuotes()
- document.getElementById("bgm").volume=0.5
+ await getQuotes()
+ document.getElementById("bgm").volume=0.2
  document.getElementById("bgm").addEventListener("ended",null,setMood())
-  //setMood()
+ document.getElementById("quote").onended=getSpokenQuote
 }
 
 
@@ -23,9 +25,6 @@ async function getToken(){
     } catch (error) {
         
     }
- 
-
-
 }
 
 async function getQuotes(){
@@ -38,7 +37,22 @@ async function getQuotes(){
 }
 
 function getSpokenQuote() {
-  let body = quotes[Math.floor(Math.random()*quotes.length)].quote
+  document.getElementById("quote-text").remove()
+  const quoteBox = document.getElementById("quote-box")
+  console.log("in quote function")
+  console.log(quotes)
+  try {
+    let body = quotes[Math.floor(Math.random()*quotes.length)]
+  if(body==lastQuote){
+    if(quotes.indexOf(body)==quotes.length){
+      body = quotes[quotes.indexOf(body)-1]
+    }
+    body = quotes[quotes.indexOf(body)+1]
+  }
+  lastQuote=body
+  
+  const parts = body.quote.split("*")
+  body = body.quote.replace(/\*/g, '')
   let request = new XMLHttpRequest();
   request.open("POST","https://northeurope.tts.speech.microsoft.com/cognitiveservices/v1");
   request.setRequestHeader("X-Microsoft-OutputFormat","audio-16khz-32kbitrate-mono-mp3");
@@ -58,13 +72,20 @@ function getSpokenQuote() {
     const audio = document.getElementById("quote")
     audio.src = url;
 
-    // Play the audio
-    audio.pause()
-    audio.load()
+    // Play the audio 
+    
+    const quoteText = document.createElement("p")
+    quoteText.setAttribute("id","quote-text")
+    quoteText.setAttribute("class","fade-in")
+    quoteText.innerHTML=parts[1]
+    quoteBox.appendChild(quoteText)
     audio.play()
   };
-
   request.send(body);
+  } catch (error) {
+    console.log(error)
+  }
+  
 }
 
 
@@ -74,12 +95,17 @@ function getSpokenQuote() {
   const audio = document.getElementById("bgm")
 
   audio.onended=()=>{
-    let nextSong = Math.floor(Math.random()*songs.length-1)
-    audio.src=songs[nextSong]
+    let nextSong =songs[Math.floor(Math.random()*songs.length)]
+    console.log(nextSong)
+    /*
+    if(lastSong==nextSong){
+      nextSong=songs.
+    }
+    */
+    audio.src=nextSong
     audio.pause()
     audio.load()
-    audio.volume=0.5
-    audio.play()
+    audio.play().volume=0.2
   }
  }
 
