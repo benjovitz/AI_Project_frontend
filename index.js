@@ -1,20 +1,26 @@
 
 const URL = "http://localhost:8080/api/quotes/"
 
-window.onload=initApp
-
-let songs = ["./music/0.mp3","./music/1.mp3","./music/2.mp3","./music/3.mp3"]
 let quotes =[]
 let lastQuote
-let lastSong
+
+
+document.getElementById("btn").onclick=initApp
 
 async function initApp(){
+  console.log("initApp()")
+  createAndAppendVideoElement()
+  createAndAppendBackgroundAudioElement()
  await getToken()
  await getQuotes()
+ getSpokenQuote()
  document.getElementById("bgm").volume=0.2
- document.getElementById("bgm").addEventListener("ended",null,setMood())
  document.getElementById("quote").onended=getSpokenQuote
 }
+
+
+
+
 
 
 async function getToken(){
@@ -72,8 +78,7 @@ function getSpokenQuote() {
     const audio = document.getElementById("quote")
     audio.src = url;
 
-    // Play the audio 
-    
+    //Play the audio 
     const quoteText = document.createElement("p")
     quoteText.setAttribute("id","quote-text")
     quoteText.setAttribute("class","fade-in")
@@ -88,26 +93,26 @@ function getSpokenQuote() {
   
 }
 
+function createAndAppendBackgroundAudioElement() {
+  const audio = document.createElement("audio");
+  audio.setAttribute("src", "bgm.mp3");
+  audio.setAttribute("id", "bgm");
+  audio.setAttribute("autoplay", true);
+  audio.setAttribute("loop",true)
+  document.body.appendChild(audio);
+}
+
+function createAndAppendVideoElement() {
+  const video = document.createElement("video");
+  video.setAttribute("src", "bgv.mp4");
+  video.setAttribute("autoplay", true);
+  video.setAttribute("muted", true);
+  video.setAttribute("loop", true);
+  video.setAttribute("id", "bgv");
+  document.body.appendChild(video);
+}
 
 
- function setMood(){
-  
-  const audio = document.getElementById("bgm")
-
-  audio.onended=()=>{
-    let nextSong =songs[Math.floor(Math.random()*songs.length)]
-    console.log(nextSong)
-    /*
-    if(lastSong==nextSong){
-      nextSong=songs.
-    }
-    */
-    audio.src=nextSong
-    audio.pause()
-    audio.load()
-    audio.play().volume=0.2
-  }
- }
 
  async function handleHttpErrors(res) {
   if (!res.ok) {

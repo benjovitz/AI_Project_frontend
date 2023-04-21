@@ -1,4 +1,5 @@
 .fade-in {
+  margin-top: 50vh;
     opacity: 0; /* set initial opacity to 0 */
     animation: fade-in 2s forwards; /* use CSS animation to gradually increase opacity over 2 seconds */
     font-size: 3rem;
@@ -29,4 +30,7 @@
     bottom: 0;
     min-width: 100%;
     min-height: 100%;
+  }
+  #btn{
+    z-index: 10;
   }
